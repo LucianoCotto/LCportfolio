@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luciano Cotto — Brand · Motion · WebUI · AiDesign</title>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@300,400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+<style>
+/* ===================== RESET & BASE ===================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-alt: #111111;
+  --bg-card: #161616;
+  --bg-modal: #0d0d0d;
+  --text: #f0f0f0;
+  --text-muted: #888888;
+  --text-dim: #555555;
+  --accent: #00ff88;
+  --accent-dim: #00cc6a;
+  --accent-glow: rgba(0,255,136,0.12);
+  --border: #222222;
+  --border-light: #333333;
+  --display: 'Clash Display', sans-serif;
+  --mono: 'Space Mono', monospace;
+  --nav-height: 60px;
+}
+
+html { scroll-behavior: auto; scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg); }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99998;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px;
+}
+::selection { background: var(--accent); color: var(--bg); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent-dim); }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+/* ===================== NAVIGATION ===================== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-height); z-index: 10000;
+  background: rgba(10,10,10,0.88); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.nav--hidden { transform: translateY(-100%); }
+.nav-inner { max-width: 1400px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+.nav-logo { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px; }
+.nav-logo::before { content: ''; width: 8px; height: 8px; background: var(--accent); display: inline-block; }
+.nav-links { display: flex; gap: 0; list-style: none; }
+.nav-links li a {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 20px 16px; display: block; position: relative; color: var(--text-muted); transition: color 0.3s;
+}
+.nav-links li a:hover, .nav-links li a.active { color: var(--text); }
+.nav-links li a.active::after { content: ''; position: absolute; bottom: 0; left: 16px; right: 16px; height: 2px; background: var(--accent); }
+.nav-contact-btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); border: 1px solid var(--accent); padding: 8px 20px;
+  transition: all 0.3s; cursor: pointer; background: transparent;
+}
+.nav-contact-btn:hover { background: var(--accent); color: var(--bg); }
+.nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 8px; }
+.nav-toggle span { width: 24px; height: 2px; background: var(--text); transition: all 0.3s; display: block; }
+.nav-toggle--open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+.nav-toggle--open span:nth-child(2) { opacity: 0; }
+.nav-toggle--open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+.mobile-menu {
+  display: none; position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+  flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+}
+.mobile-menu--open { display: flex; }
+.mobile-menu a { font-family: var(--display); font-size: 36px; font-weight: 600; color: var(--text); transition: color 0.3s; }
+.mobile-menu a:hover { color: var(--accent); }
+
+@media(max-width:768px) { .nav-links, .nav-contact-btn { display: none; } .nav-toggle { display: flex; } }
+
+/* ===================== SECTION COMMON ===================== */
+.section { min-height: 100vh; padding: calc(var(--nav-height) + 60px) 24px 60px; max-width: 1400px; margin: 0 auto; }
+.section-header { margin-bottom: 60px; }
+.section-label {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+}
+.section-label::before { content: ''; width: 40px; height: 1px; background: var(--accent); }
+.section-title {
+  font-family: var(--display); font-size: clamp(36px, 6vw, 72px); font-weight: 600;
+  line-height: 1.05; letter-spacing: -1px; max-width: 800px;
+}
+.section-subtitle { font-size: clamp(16px, 2vw, 20px); color: var(--text-muted); margin-top: 24px; max-width: 600px; line-height: 1.7; }
+.section-grid-line { width: 100%; height: 1px; background: var(--border); margin: 40px 0; }
+
+/* ===================== HERO ===================== */
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding-top: var(--nav-height); }
+.hero-bg-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px; opacity: 0.3;
+}
+.hero-content { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 0 24px; width: 100%; }
+.hero-eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 6px; text-transform: uppercase; color: var(--accent); margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+.hero-eyebrow .line { width: 60px; height: 1px; background: var(--accent); }
+.hero-headline { font-family: var(--display); font-size: clamp(40px, 8vw, 100px); font-weight: 600; line-height: 0.95; letter-spacing: -2px; margin-bottom: 32px; }
+.hero-headline .accent-word { color: var(--accent); }
+.hero-headline .outline-word { -webkit-text-stroke: 1.5px var(--text); color: transparent; }
+.hero-sub { font-size: clamp(16px, 2vw, 20px); color: var(--text-muted); max-width: 560px; line-height: 1.7; margin-bottom: 48px; }
+.hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-primary {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 16px 36px; background: var(--accent); color: var(--bg); border: none;
+  cursor: pointer; transition: all 0.3s; font-weight: 700;
+}
+.btn-primary:hover { background: var(--text); transform: translateY(-2px); }
+.btn-secondary {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 16px 36px; background: transparent; color: var(--text); border: 1px solid var(--border-light);
+  cursor: pointer; transition: all 0.3s;
+}
+.btn-secondary:hover { border-color: var(--text); transform: translateY(-2px); }
+
+.hero-meta {
+  position: absolute; bottom: 40px; left: 24px; right: 24px; max-width: 1400px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.hero-stats { display: flex; gap: 48px; }
+.hero-stat { display: flex; flex-direction: column; }
+.hero-stat-number { font-family: var(--display); font-size: 40px; font-weight: 600; color: var(--text); }
+.hero-stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-top: 4px; }
+.hero-scroll { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); display: flex; align-items: center; gap: 12px; }
+.hero-scroll .arrow { width: 1px; height: 40px; background: var(--text-dim); position: relative; animation: scrollPulse 2s ease-in-out infinite; }
+@keyframes scrollPulse { 0%,100%{opacity:.3;transform:scaleY(.6);} 50%{opacity:1;transform:scaleY(1);} }
+
+@media(max-width:768px) {
+  .hero-stats { gap: 24px; }
+  .hero-stat-number { font-size: 28px; }
+}
+
+/* ===================== MARQUEE ===================== */
+.marquee-section { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; padding: 20px 0; }
+.marquee-track { display: flex; width: max-content; animation: marqueeScroll 30s linear infinite; }
+.marquee-item { font-family: var(--display); font-size: clamp(20px, 4vw, 48px); font-weight: 500; white-space: nowrap; padding: 0 32px; color: var(--text-dim); }
+.marquee-item .sep { color: var(--accent); margin: 0 16px; }
+@keyframes marqueeScroll { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+/* ===================== SPECIALTIES ===================== */
+.specialties { padding: 0 24px 100px; max-width: 1400px; margin: 0 auto; }
+.specialties-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.specialty-card {
+  background: var(--bg); padding: 40px 32px; position: relative; overflow: hidden; cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.22,1,0.36,1); min-height: 280px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.specialty-card:hover { background: var(--bg-alt); }
+.specialty-card::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.specialty-card:hover::after { transform: scaleX(1); }
+.specialty-number { font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+.specialty-icon { font-size: 40px; margin-bottom: 20px; opacity: 0.7; }
+.specialty-name { font-family: var(--display); font-size: 28px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 12px; }
+.specialty-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+.specialty-link-text {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin-top: 24px; display: flex; align-items: center; gap: 8px; transition: gap 0.3s;
+}
+.specialty-card:hover .specialty-link-text { gap: 16px; }
+@media(max-width:1024px) { .specialties-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:600px) { .specialties-grid { grid-template-columns: 1fr; } }
+
+/* ===================== FILTERS ===================== */
+.projects-filter { display: flex; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+.filter-btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 8px 16px; background: transparent; color: var(--text-muted); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.3s;
+}
+.filter-btn:hover, .filter-btn.active { color: var(--text); border-color: var(--accent); background: var(--accent-glow); }
+
+/* ===================== BRAND GRID ===================== */
+.brand-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); }
+.brand-item {
+  background: var(--bg); aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 32px; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s;
+}
+.brand-item:hover { background: var(--bg-alt); }
+.brand-item-bg { position: absolute; inset: 0; opacity: 0.15; transition: opacity 0.5s; }
+.brand-item:hover .brand-item-bg { opacity: 0.3; }
+.brand-item-content { position: relative; z-index: 2; text-align: center; }
+.brand-item-logo { width: 80px; height: 80px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
+.brand-item-logo svg { width: 100%; height: 100%; }
+.brand-item-name { font-family: var(--display); font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.brand-item-type { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+.brand-item-cta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin-top: 12px; opacity: 0; transform: translateY(8px); transition: all 0.4s;
+}
+.brand-item:hover .brand-item-cta { opacity: 1; transform: translateY(0); }
+@media(max-width:768px) { .brand-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:500px) { .brand-grid { grid-template-columns: 1fr; } }
+
+/* ===================== MOTION GRID ===================== */
+.reel-container {
+  position: relative; width: 100%; aspect-ratio: 16/9; background: var(--bg-card);
+  border: 1px solid var(--border); margin-bottom: 60px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.reel-placeholder { text-align: center; }
+.reel-play-btn {
+  width: 80px; height: 80px; border: 2px solid var(--text); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+  font-size: 28px; transition: all 0.3s; color: var(--text);
+}
+.reel-container:hover .reel-play-btn { background: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+.reel-title { font-family: var(--mono); font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-muted); }
+
+.motion-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.motion-item {
+  position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--border);
+  background: var(--bg-card); transition: all 0.4s;
+}
+.motion-item:hover { border-color: var(--accent-dim); }
+.motion-thumb { aspect-ratio: 16/10; overflow: hidden; position: relative; }
+.motion-thumb svg { width: 100%; height: 100%; transition: transform 0.6s; }
+.motion-item:hover .motion-thumb svg { transform: scale(1.08); }
+.motion-play-icon {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.8);
+  width: 48px; height: 48px; border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  color: white; opacity: 0; transition: all 0.4s; pointer-events: none;
+}
+.motion-item:hover .motion-play-icon { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+.motion-info { padding: 16px; }
+.motion-title { font-family: var(--display); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.motion-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+@media(max-width:768px) { .motion-grid { grid-template-columns: 1fr; } }
+
+/* ===================== WebUI ===================== */
+.webui-project {
+  border: 1px solid var(--border); background: var(--bg-card); overflow: hidden;
+  transition: all 0.5s; margin-bottom: 48px; cursor: pointer;
+}
+.webui-project:hover { border-color: var(--border-light); }
+.webui-device { padding: 32px; background: var(--bg-alt); display: flex; justify-content: center; position: relative; }
+.webui-mockup { width: 100%; max-width: 500px; border: 1px solid var(--border); overflow: hidden; }
+.webui-mockup svg { width: 100%; display: block; }
+.webui-details { padding: 32px; }
+.webui-client { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.webui-name { font-family: var(--display); font-size: 24px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 16px; }
+.webui-brief { display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; font-size: 14px; }
+.webui-brief dt { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); padding-top: 2px; }
+.webui-brief dd { color: var(--text-muted); line-height: 1.5; }
+.webui-tech { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.webui-tech span {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px; border: 1px solid var(--border); color: var(--text-dim);
+}
+.webui-cta-row { margin-top: 20px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+@media(max-width:900px) { .webui-showcase { grid-template-columns: 1fr; } }
+
+/* ===================== AiDESIGN ===================== */
+.ai-principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 80px; }
+.ai-principle { background: var(--bg); padding: 40px 32px; text-align: center; }
+.ai-principle-icon { font-size: 32px; margin-bottom: 16px; }
+.ai-principle-title { font-family: var(--display); font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.ai-principle-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+.ai-workflow { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 80px; flex-wrap: wrap; }
+.ai-step { text-align: center; padding: 24px 32px; }
+.ai-step-number { font-family: var(--display); font-size: 48px; font-weight: 300; color: var(--border-light); margin-bottom: 8px; }
+.ai-step-label { font-family: var(--display); font-size: 14px; font-weight: 600; }
+.ai-step-sublabel { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-top: 4px; }
+.ai-connector { width: 40px; height: 2px; background: var(--border-light); flex-shrink: 0; }
+
+.ai-quote { border: 1px solid var(--border); padding: 48px; margin: 60px 0; text-align: center; position: relative; }
+.ai-quote::before {
+  content: '"'; position: absolute; top: -10px; left: 32px;
+  font-family: var(--display); font-size: 80px; font-weight: 300; color: var(--accent); line-height: 1;
+}
+.ai-quote-text { font-family: var(--display); font-size: clamp(18px, 2.5vw, 28px); font-weight: 400; line-height: 1.6; max-width: 700px; margin: 0 auto; }
+.ai-quote-author { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-top: 24px; }
+
+.ai-gallery { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; background: var(--border); }
+.ai-gallery-item { background: var(--bg); aspect-ratio: 1; overflow: hidden; cursor: pointer; position: relative; }
+.ai-gallery-item svg { width: 100%; height: 100%; transition: transform 0.6s; }
+.ai-gallery-item:hover svg { transform: scale(1.1); }
+.ai-gallery-tag {
+  position: absolute; bottom: 12px; left: 12px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; background: rgba(10,10,10,0.85); color: var(--accent);
+  opacity: 0; transform: translateY(8px); transition: all 0.4s;
+}
+.ai-gallery-item:hover .ai-gallery-tag { opacity: 1; transform: translateY(0); }
+
+@media(max-width:900px) {
+  .ai-principles { grid-template-columns: 1fr; }
+  .ai-gallery { grid-template-columns: repeat(2,1fr); }
+  .ai-workflow { flex-direction: column; }
+  .ai-connector { width: 2px; height: 40px; }
+}
+
+/* ===================== CONTACT ===================== */
+.contact-section { border-top: 1px solid var(--border); padding: 100px 24px; max-width: 1400px; margin: 0 auto; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.contact-headline { font-family: var(--display); font-size: clamp(32px, 5vw, 64px); font-weight: 600; letter-spacing: -2px; line-height: 1.1; margin-bottom: 24px; }
+.contact-sub { font-size: 18px; color: var(--text-muted); line-height: 1.7; margin-bottom: 40px; }
+.contact-links { display: flex; flex-direction: column; gap: 24px; }
+.contact-link { display: flex; align-items: center; gap: 16px; font-size: 16px; transition: color 0.3s; }
+.contact-link:hover { color: var(--accent); }
+.contact-link-icon {
+  width: 48px; height: 48px; border: 1px solid var(--border); display: flex;
+  align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; transition: all 0.3s;
+}
+.contact-link:hover .contact-link-icon { border-color: var(--accent); background: var(--accent-glow); }
+
+.contact-form { display: flex; flex-direction: column; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+.form-group input, .form-group textarea {
+  background: var(--bg-alt); border: 1px solid var(--border); padding: 14px 16px;
+  font-family: inherit; font-size: 15px; color: var(--text); outline: none;
+  transition: border-color 0.3s; resize: vertical;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+.form-group textarea { min-height: 120px; }
+.form-submit { align-self: flex-start; }
+@media(max-width:900px) { .contact-grid { grid-template-columns: 1fr; gap: 60px; } }
+
+/* ===================== FOOTER ===================== */
+.footer { border-top: 1px solid var(--border); padding: 40px 24px; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.footer-left { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: var(--text-dim); }
+.footer-right { display: flex; gap: 24px; }
+.footer-right a { font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: var(--text-dim); transition: color 0.3s; }
+.footer-right a:hover { color: var(--accent); }
+
+/* ===================== WHATSAPP FLOAT ===================== */
+.whatsapp-float {
+  position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
+  background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: white; z-index: 9998; box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  transition: all 0.3s; cursor: pointer;
+}
+.whatsapp-float:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(37,211,102,0.6); }
+
+/* ===================== PROJECT POPUP MODAL ===================== */
+.popup-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 100001;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.popup-overlay--open { display: flex; opacity: 1; pointer-events: auto; }
+
+.popup-container {
+  width: 100%; max-width: 1100px; max-height: 92vh;
+  background: var(--bg-modal); border: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: translateY(30px) scale(0.97); transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.popup-overlay--open .popup-container { transform: translateY(0) scale(1); }
+
+/* Header */
+.popup-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.popup-header-left { display: flex; align-items: center; gap: 16px; }
+.popup-category-badge {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 12px; background: var(--accent); color: var(--bg); font-weight: 700;
+}
+.popup-title { font-family: var(--display); font-size: 20px; font-weight: 600; }
+.popup-close {
+  width: 40px; height: 40px; border: 1px solid var(--border); background: transparent;
+  color: var(--text); font-size: 20px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: all 0.3s;
+}
+.popup-close:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Media area */
+.popup-media {
+  position: relative; width: 100%; flex: 1; min-height: 300px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background: #000;
+}
+
+/* Carousel mode */
+.popup-carousel { display: contents; }
+.popup-slide {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+}
+.popup-slide--active { opacity: 1; pointer-events: auto; }
+.popup-slide img,
+.popup-slide video,
+.popup-slide svg {
+  width: 100%; height: 100%; object-fit: contain;
+}
+.popup-slide iframe {
+  width: 100%; height: 100%; border: none;
+}
+
+/* Video only mode */
+.popup-video-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.popup-video-wrap video,
+.popup-video-wrap iframe {
+  width: 100%; height: 100%; object-fit: contain; border: none;
+}
+
+/* Carousel controls */
+.popup-carousel-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.5); color: white; font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  z-index: 10; transition: all 0.3s; backdrop-filter: blur(4px);
+}
+.popup-carousel-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.popup-carousel-btn--prev { left: 16px; }
+.popup-carousel-btn--next { right: 16px; }
+.popup-carousel-btn.hidden { display: none; }
+
+/* Dots */
+.popup-dots {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 10;
+}
+.popup-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3);
+  cursor: pointer; transition: all 0.3s; border: none; padding: 0;
+}
+.popup-dot--active { background: var(--accent); transform: scale(1.3); }
+
+/* Counter badge */
+.popup-counter {
+  position: absolute; top: 16px; right: 16px;
+  font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+  background: rgba(0,0,0,0.6); padding: 4px 12px; z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+/* Caption */
+.popup-caption {
+  padding: 20px 24px; border-top: 1px solid var(--border); flex-shrink: 0;
+}
+.popup-caption-text {
+  font-family: var(--display); font-size: 16px; font-weight: 400;
+  color: var(--text-muted); line-height: 1.6;
+}
+.popup-caption-meta {
+  display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+}
+.popup-caption-meta span {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-dim); padding: 4px 10px; border: 1px solid var(--border);
+}
+
+@media(max-width:768px) {
+  .popup-container { max-height: 96vh; }
+  .popup-header { padding: 16px; }
+  .popup-title { font-size: 16px; }
+  .popup-caption { padding: 16px; }
+  .popup-caption-text { font-size: 14px; }
+  .popup-media { min-height: 250px; }
+  .popup-carousel-btn { width: 36px; height: 36px; font-size: 14px; }
+  .popup-carousel-btn--prev { left: 8px; }
+  .popup-carousel-btn--next { right: 8px; }
+}
+
+/* ===================== ANIMATIONS ===================== */
+.reveal-up { opacity: 0; transform: translateY(40px); }
+.reveal-scale { opacity: 0; transform: scale(0.92); }
+.reveal-right { opacity: 0; transform: translateX(40px); }
+
+/* Filter dim */
+.filter-dimmed { opacity: 0.15 !important; transform: scale(0.95) !important; pointer-events: none !important; transition: all 0.4s cubic-bezier(0.22,1,0.36,1) !important; }
+.filter-visible { opacity: 1 !important; transform: scale(1) !important; pointer-events: auto !important; transition: all 0.4s cubic-bezier(0.22,1,0.36,1) !important; }
+</style>
+
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.95/build/spline-viewer.js"></script>
+
+
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader" style="position:fixed;inset:0;background:var(--bg);z-index:100002;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+  <div id="loaderCounter" style="font-family:var(--display);font-size:56px;font-weight:300;color:var(--text);">0</div>
+  <div style="width:200px;height:2px;background:var(--border);overflow:hidden;">
+    <div id="loaderBar" style="height:100%;width:0%;background:var(--accent);"></div>
+  </div>
+  <div style="font-family:var(--mono);font-size:14px;color:var(--text-muted);letter-spacing:4px;text-transform:uppercase;">Cargando portfolio</div>
+</div>
+
+<!-- NAVIGATION -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo">Luciano Cotto</a>
+    <ul class="nav-links">
+      <li><a href="#home" class="active" data-section="home">Home</a></li>
+      <li><a href="#brand" data-section="brand">Brand</a></li>
+      <li><a href="#motion" data-section="motion">Motion</a></li>
+      <li><a href="#webui" data-section="webui">WebUI</a></li>
+      <li><a href="#aidesign" data-section="aidesign">AiDesign</a></li>
+    </ul>
+    <a href="#contact" class="nav-contact-btn">Hablemos</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" data-mobile-link>Home</a>
+  <a href="#brand" data-mobile-link>Brand</a>
+  <a href="#motion" data-mobile-link>Motion</a>
+  <a href="#webui" data-mobile-link>WebUI</a>
+  <a href="#aidesign" data-mobile-link>AiDesign</a>
+  <a href="#contact" data-mobile-link style="color:var(--accent);">Hablemos →</a>
+</div>
+
+<!-- ==================== HOME ==================== -->
+<section class="hero section" id="home">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal-up"><span class="line"></span><span>Brand · Motion · WebUI · AiDesign</span></div>
+    <h1 class="hero-headline">
+      <div class="reveal-up">Diseño <span class="accent-word">digital</span></div>
+      <div class="reveal-up">que <span class="outline-word">transforma.</span></div>
+    </h1>
+    <p class="hero-sub reveal-up">15+ años creando identidades visuales, experiencias digitales y contenido audiovisual para marcas que quieren destacar.</p>
+    <div class="hero-ctas reveal-up">
+      <a href="#brand" class="btn-primary">Ver proyectos</a>
+      <a href="#contact" class="btn-secondary">Hablemos →</a>
+    </div>
+    <spline-viewer url="https://prod.spline.design/YxkKJbnQ5qrMeqjm/scene.splinecode"></spline-viewer>
+  </div>
+  <div class="hero-meta">
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hero-stat-number counter" data-target="15">0</span><span class="hero-stat-label">Años</span></div>
+      <div class="hero-stat"><span class="hero-stat-number counter" data-target="120">0</span><span class="hero-stat-label">Proyectos</span></div>
+      <div class="hero-stat"><span class="hero-stat-number counter" data-target="6">0</span><span class="hero-stat-label">Países</span></div>
+    </div>
+    <div class="hero-scroll"><span>Scroll</span><span class="arrow"></span></div>
+  </div>
+
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">Branding <span class="sep">◆</span> Motion Design <span class="sep">◆</span> UI/UX <span class="sep">◆</span> AI Design <span class="sep">◆</span> Visual Identity <span class="sep">◆</span> Web Development <span class="sep">◆</span> After Effects <span class="sep">◆</span> Figma <span class="sep">◆</span> ComfyUI <span class="sep">◆</span></span>
+    <span class="marquee-item">Branding <span class="sep">◆</span> Motion Design <span class="sep">◆</span> UI/UX <span class="sep">◆</span> AI Design <span class="sep">◆</span> Visual Identity <span class="sep">◆</span> Web Development <span class="sep">◆</span> After Effects <span class="sep">◆</span> Figma <span class="sep">◆</span> ComfyUI <span class="sep">◆</span></span>
+  </div>
+</div>
+
+<!-- SPECIALTIES -->
+<div class="specialties">
+  <div class="section-grid-line"></div>
+  <div class="specialties-grid">
+    <a href="#brand" class="specialty-card reveal-up">
+      <div>
+        <span class="specialty-number">01</span>
+        <div class="specialty-icon">✦</div>
+        <h3 class="specialty-name">Brand</h3>
+        <p class="specialty-desc">Identidades visuales estratégicas que diferencian, conectan y perduran.</p>
+      </div>
+      <span class="specialty-link-text">Explorar →</span>
+    </a>
+    <a href="#motion" class="specialty-card reveal-up">
+      <div>
+        <span class="specialty-number">02</span>
+        <div class="specialty-icon">▶</div>
+        <h3 class="specialty-name">Motion</h3>
+        <p class="specialty-desc">Animaciones y piezas audiovisuales que captan, explican y convierten.</p>
+      </div>
+      <span class="specialty-link-text">Explorar →</span>
+    </a>
+    <a href="#webui" class="specialty-card reveal-up">
+      <div>
+        <span class="specialty-number">03</span>
+        <div class="specialty-icon">◈</div>
+        <h3 class="specialty-name">WebUI</h3>
+        <p class="specialty-desc">Interfaces intuitivas centradas en usabilidad, accesibilidad y conversión.</p>
+      </div>
+      <span class="specialty-link-text">Explorar →</span>
+    </a>
+    <a href="#aidesign" class="specialty-card reveal-up">
+      <div>
+        <span class="specialty-number">04</span>
+        <div class="specialty-icon">⬡</div>
+        <h3 class="specialty-name">AiDesign</h3>
+        <p class="specialty-desc">Innovación con IA generativa para acelerar ideación y exploración visual.</p>
+      </div>
+      <span class="specialty-link-text">Explorar →</span>
+    </a>
+  </div>
+</div>
+
+<!-- ==================== BRAND ==================== -->
+<section class="section" id="brand">
+  <div class="section-header">
+    <div class="section-label reveal-up">01 — Brand Design</div>
+    <h2 class="section-title reveal-up">Identidad con<br>propósito.</h2>
+    <p class="section-subtitle reveal-up">Construyo marcas desde la estrategia visual: logotipos, sistemas de identidad, guidelines y aplicaciones que comunican valor desde el primer contacto.</p>
+  </div>
+
+  <div class="projects-filter reveal-up">
+    <button class="filter-btn active" data-filter="all" data-group="brand">Todos</button>
+    <button class="filter-btn" data-filter="logotipo" data-group="brand">Logotipos</button>
+    <button class="filter-btn" data-filter="branding" data-group="brand">Branding</button>
+    <button class="filter-btn" data-filter="packaging" data-group="brand">Packaging</button>
+  </div>
+
+  <div class="brand-grid" id="brandGrid">
+    <!-- Brand Item 1 -->
+    <div class="brand-item reveal-scale" data-category="branding"
+         data-popup-type="carousel"
+         data-popup-title="Tirando Fruta"
+         data-popup-cat="Branding completo"
+         data-popup-caption="Identidad visual completa para una marca de alimentos artesanales. El desafío era transmitir frescura, naturalidad y calidad premium a través de un sistema visual coherente."
+         data-popup-meta="Figma,Illustrator,Photoshop"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%2260%22 y=%2260%22 width=%22680%22 height=%22380%22 rx=%228%22 fill=%22%231a1a2e%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2272%22 font-weight=%22bold%22 fill=%22%2300ff88%22>TF</text><text x=%22400%22 y=%22320%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23888%22>Logo Principal</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%2240%22 y=%2240%22 width=%22220%22 height=%22150%22 rx=%228%22 fill=%22%231a1a2e%22/><rect x=%22290%22 y=%2240%22 width=%22220%22 height=%22150%22 rx=%228%22 fill=%22%232d1b3d%22/><rect x=%22540%22 y=%2240%22 width=%22220%22 height=%22150%22 rx=%228%22 fill=%22%231b2d1b%22/><rect x=%2240%22 y=%22230%22 width=%22720%22 height=%22230%22 rx=%228%22 fill=%22%231a1a2e%22/><text x=%22150%22 y=%22120%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2228%22 fill=%22%2300ff88%22>TF</text><text x=%22400%22 y=%22120%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2228%22 fill=%22%2300ff88%22>TF</text><text x=%22650%22 y=%22120%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2228%22 fill=%22%2300ff88%22>TF</text><text x=%22400%22 y=%22360%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Paleta Cromática + Tipografía</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22100%22 y=%2250%22 width=%22250%22 height=%22400%22 rx=%224%22 fill=%22%231a1a2e%22/><rect x=%22400%22 y=%2250%22 width=%22300%22 height=%22200%22 rx=%224%22 fill=%22%231a1a2e%22/><text x=%22225%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2236%22 fill=%22%2300ff88%22>TF</text><text x=%22550%22 y=%22160%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Aplicación Packaging</text></svg>"}
+         ]'>
+      <div class="brand-item-bg" style="background:linear-gradient(135deg,#1a1a2e,#16213e);"></div>
+      <div class="brand-item-content">
+        <div class="brand-item-logo">
+          <svg viewBox="0 0 80 80" fill="none"><rect x="10" y="10" width="60" height="60" rx="4" stroke="#f0f0f0" stroke-width="2"/><text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="22" fill="#f0f0f0">TF</text></svg>
+        </div>
+        <div class="brand-item-name">Tirando Fruta</div>
+        <div class="brand-item-type">Branding completo</div>
+      </div>
+      <div class="brand-item-cta">Ver proyecto →</div>
+    </div>
+
+    <!-- Brand Item 2 -->
+    <div class="brand-item reveal-scale" data-category="branding"
+         data-popup-type="carousel"
+         data-popup-title="Innergiving"
+         data-popup-cat="Identidad estratégica"
+         data-popup-caption="Sistema de identidad para una plataforma de bienestar digital. La marca necesitaba transmitir calma, confianza y transformación personal a través de su lenguaje visual."
+         data-popup-meta="Figma,Illustrator"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><circle cx=%22400%22 cy=%22220%22 r=%22100%22 fill=%22%232d1b3d%22/><circle cx=%22400%22 cy=%22220%22 r=%2260%22 fill=%22%233d2b4d%22/><circle cx=%22400%22 cy=%22220%22 r=%2225%22 fill=%22%2300ff88%22 opacity=%220.6%22/><text x=%22400%22 y=%22228%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23fff%22>IG</text><text x=%22400%22 y=%22380%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2216%22 fill=%22%23888%22>Logotipo Principal</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%2260%22 y=%2260%22 width=%22680%22 height=%22380%22 rx=%228%22 fill=%22%231a1a2e%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23888%22>Brand Guidelines — Sistema de color, tipografía y aplicaciones</text></svg>"}
+         ]'>
+      <div class="brand-item-bg" style="background:linear-gradient(135deg,#2d1b3d,#1a1a2e);"></div>
+      <div class="brand-item-content">
+        <div class="brand-item-logo">
+          <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="30" stroke="#f0f0f0" stroke-width="2"/><text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="18" fill="#f0f0f0">IG</text></svg>
+        </div>
+        <div class="brand-item-name">Innergiving</div>
+        <div class="brand-item-type">Identidad estratégica</div>
+      </div>
+      <div class="brand-item-cta">Ver proyecto →</div>
+    </div>
+
+    <!-- Brand Item 3 -->
+    <div class="brand-item reveal-scale" data-category="logotipo"
+         data-popup-type="carousel"
+         data-popup-title="Kydak Workshop"
+         data-popup-cat="Logotipo + Guidelines"
+         data-popup-caption="Diseño de logotipo y manual de identidad para Kydak Workshop. Un enfoque minimalista y geométrico que refleja precisión y profesionalismo técnico."
+         data-popup-meta="Illustrator,Figma"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><polygon points=%22400,100 550,400 250,400%22 stroke=%22%2300ff88%22 stroke-width=%223%22 fill=%22none%22/><text x=%22400%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2232%22 fill=%22%23fff%22>KW</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22100%22 y=%2280%22 width=%22250%22 height=%22340%22 rx=%224%22 fill=%22%231b2d1b%22/><rect x=%22450%22 y=%2280%22 width=%22250%22 height=%22340%22 rx=%224%22 fill=%22%231a2e1a%22/><polygon points=%22225,180 280,290 170,290%22 stroke=%22%2300ff88%22 stroke-width=%222%22 fill=%22none%22/><polygon points=%22575,180 630,290 520,290%22 stroke=%22%2300ff88%22 stroke-width=%222%22 fill=%22none%22/></svg>"}
+         ]'>
+      <div class="brand-item-bg" style="background:linear-gradient(135deg,#1b2d1b,#1a2e1a);"></div>
+      <div class="brand-item-content">
+        <div class="brand-item-logo">
+          <svg viewBox="0 0 80 80" fill="none"><polygon points="40,10 70,70 10,70" stroke="#f0f0f0" stroke-width="2" fill="none"/><text x="50%" y="62%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="16" fill="#f0f0f0">KW</text></svg>
+        </div>
+        <div class="brand-item-name">Kydak Workshop</div>
+        <div class="brand-item-type">Logotipo + Guidelines</div>
+      </div>
+      <div class="brand-item-cta">Ver proyecto →</div>
+    </div>
+
+    <!-- Brand Item 4 -->
+    <div class="brand-item reveal-scale" data-category="branding"
+         data-popup-type="video"
+         data-popup-title="Quintana"
+         data-popup-cat="Branding corporativo"
+         data-popup-caption="Branding completo para empresa de servicios corporativos. Video de presentación de marca mostrando la evolución del logotipo y sus aplicaciones."
+         data-popup-meta="After Effects,Illustrator"
+         data-popup-video="https://www.youtube.com/embed/dQw4W9WcXcQ?autoplay=0&mute=1">
+      <div class="brand-item-bg" style="background:linear-gradient(135deg,#2e1a1a,#3d1b1b);"></div>
+      <div class="brand-item-content">
+        <div class="brand-item-logo">
+          <svg viewBox="0 0 80 80" fill="none"><rect x="10" y="25" width="60" height="30" rx="15" stroke="#f0f0f0" stroke-width="2"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-weight="400" font-size="14" fill="#f0f0f0">Q</text></svg>
+        </div>
+        <div class="brand-item-name">Quintana</div>
+        <div class="brand-item-type">Branding corporativo</div>
+      </div>
+      <div class="brand-item-cta">Ver video →</div>
+    </div>
+
+    <!-- Brand Item 5 -->
+    <div class="brand-item reveal-scale" data-category="packaging"
+         data-popup-type="carousel"
+         data-popup-title="NovaVida"
+         data-popup-cat="Packaging + Label"
+         data-popup-caption="Diseño de packaging y etiquetas para línea de productos naturales. Cada variante de producto mantuvo coherencia visual con identidad diferenciada por color."
+         data-popup-meta="Illustrator,Photoshop"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22150%22 y=%2280%22 width=%22200%22 height=%22340%22 rx=%2212%22 fill=%22%231a2e2e%22/><rect x=%22450%22 y=%2280%22 width=%22200%22 height=%22340%22 rx=%2212%22 fill=%22%231b3d3d%22/><text x=%22250%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2224%22 fill=%22%2300ff88%22>NV</text><text x=%22550%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2224%22 fill=%22%2300ff88%22>NV</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%2280%22 y=%2260%22 width=%22640%22 height=%22380%22 rx=%228%22 fill=%22%231a1a2e%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2216%22 fill=%22%23888%22>Mockup de etiquetas y packaging final</text></svg>"}
+         ]'>
+      <div class="brand-item-bg" style="background:linear-gradient(135deg,#1a2e2e,#1b3d3d);"></div>
+      <div class="brand-item-content">
+        <div class="brand-item-logo">
+          <svg viewBox="0 0 80 80" fill="none"><rect x="15" y="15" width="50" height="50" rx="8" stroke="#f0f0f0" stroke-width="2"/><rect x="25" y="25" width="30" height="30" rx="4" stroke="#f0f0f0" stroke-width="1.5"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="14" fill="#f0f0f0">NV</text></svg>
+        </div>
+        <div class="brand-item-name">NovaVida</div>
+        <div class="brand-item-type">Packaging + Label</div>
+      </div>
+      <div class="brand-item-cta">Ver proyecto →</div>
+    </div>
+
+    <!-- Brand Item 6 -->
+    <div class="brand-item reveal-scale" data-category="logotipo"
+         data-popup-type="carousel"
+         data-popup-title="Founders Workshop"
+         data-popup-cat="Logotipo"
+         data-popup-caption="Logotipo para espacio de coworking y workshops para emprendedores. Diseño geométrico que comunica comunidad y colaboración."
+         data-popup-meta="Figma,Illustrator"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><line x1=%22200%22 y1=%22250%22 x2=%22600%22 y2=%22250%22 stroke=%22%2300ff88%22 stroke-width=%223%22/><circle cx=%22400%22 cy=%22250%22 r=%2280%22 stroke=%22%2300ff88%22 stroke-width=%223%22 fill=%22none%22/><text x=%22400%22 y=%22258%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2236%22 fill=%22%23fff%22>FW</text></svg>"}
+         ]'>
+      <div class="brand-item-bg" style="background:linear-gradient(135deg,#2e2e1a,#3d3d1b);"></div>
+      <div class="brand-item-content">
+        <div class="brand-item-logo">
+          <svg viewBox="0 0 80 80" fill="none"><line x1="15" y1="40" x2="65" y2="40" stroke="#f0f0f0" stroke-width="2"/><circle cx="40" cy="40" r="12" stroke="#f0f0f0" stroke-width="2"/><text x="50%" y="68%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12" fill="#f0f0f0">FW</text></svg>
+        </div>
+        <div class="brand-item-name">Founders Workshop</div>
+        <div class="brand-item-type">Logotipo</div>
+      </div>
+      <div class="brand-item-cta">Ver proyecto →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MOTION ==================== -->
+<section class="section" id="motion">
+  <div class="section-header">
+    <div class="section-label reveal-up">02 — Motion & Video</div>
+    <h2 class="section-title reveal-up">Movimiento<br>que comunica.</h2>
+    <p class="section-subtitle reveal-up">Animaciones, reels y piezas audiovisuales diseñadas para captar atención, explicar conceptos y generar acción.</p>
+  </div>
+
+  <div class="reel-container reveal-scale" id="reelContainer"
+       data-popup-type="video"
+       data-popup-title="Showreel 2024"
+       data-popup-cat="Motion Reel"
+       data-popup-caption="Recopilación de los mejores trabajos de motion design del año. Explainer videos, brand animations y UI motion."
+       data-popup-meta="After Effects,Premiere,Blender"
+       data-popup-video="https://www.youtube.com/embed/dQw4W9WcXcQ?autoplay=0&mute=1">
+    <div class="reel-placeholder">
+      <div class="reel-play-btn">▶</div>
+      <div class="reel-title">Showreel 2024</div>
+    </div>
+  </div>
+
+  <div class="projects-filter reveal-up">
+    <button class="filter-btn active" data-filter="all" data-group="motion">Todos</button>
+    <button class="filter-btn" data-filter="explainer" data-group="motion">Explainer</button>
+    <button class="filter-btn" data-filter="social" data-group="motion">Social Media</button>
+    <button class="filter-btn" data-filter="uimotion" data-group="motion">UI Animation</button>
+    <button class="filter-btn" data-filter="brandmotion" data-group="motion">Brand Motion</button>
+  </div>
+
+  <div class="motion-grid" id="motionGrid">
+    <!-- Motion 1 -->
+    <div class="motion-item reveal-scale" data-category="explainer"
+         data-popup-type="carousel"
+         data-popup-title="App Explainer — Fintech"
+         data-popup-cat="Explainer Video"
+         data-popup-caption="Video explicativo de 60 segundos para app fintech. Animación limpia y didáctica que simplifica conceptos financieros complejos."
+         data-popup-meta="After Effects,60s"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22100%22 y=%2280%22 width=%22600%22 height=%22340%22 rx=%228%22 fill=%22%231a1a2e%22/><polygon points=%22370,220 370,280 430,250%22 fill=%22%2300ff88%22 opacity=%220.8%22/><text x=%22400%22 y=%22340%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Frame: Animación Principal</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22100%22 y=%2280%22 width=%22600%22 height=%22340%22 rx=%228%22 fill=%22%230f3460%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Frame: Transición UI</text></svg>"}
+         ]'>
+      <div class="motion-thumb">
+        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect fill="#161616" width="480" height="300"/><rect x="40" y="40" width="400" height="220" rx="8" fill="#1a1a2e"/><polygon points="220,130 220,170 260,150" fill="#00ff88" opacity="0.8"/></svg>
+        <div class="motion-play-icon">▶</div>
+      </div>
+      <div class="motion-info"><div class="motion-title">App Explainer — Fintech</div><div class="motion-meta">Explainer · After Effects · 60s</div></div>
+    </div>
+
+    <!-- Motion 2 -->
+    <div class="motion-item reveal-scale" data-category="social"
+         data-popup-type="carousel"
+         data-popup-title="Social Reel — Producto"
+         data-popup-cat="Social Media"
+         data-popup-caption="Serie de 5 reels para Instagram mostrando producto con transiciones dinámicas y ritmo musical sincronizado."
+         data-popup-meta="Premiere,15s×5"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22250%22 y=%2250%22 width=%22300%22 height=%22400%22 rx=%2216%22 fill=%22%232d1b3d%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Reel: Frame 1</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22250%22 y=%2250%22 width=%22300%22 height=%22400%22 rx=%2216%22 fill=%22%234a1942%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Reel: Frame 2</text></svg>"}
+         ]'>
+      <div class="motion-thumb">
+        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect fill="#161616" width="480" height="300"/><rect x="100" y="50" width="280" height="200" rx="8" fill="#2d1b3d"/><rect x="130" y="80" width="120" height="120" rx="4" stroke="#00ff88" stroke-width="2" fill="none" opacity="0.6"/><rect x="160" y="110" width="120" height="120" rx="4" stroke="#00ff88" stroke-width="2" fill="none" opacity="0.4"/></svg>
+        <div class="motion-play-icon">▶</div>
+      </div>
+      <div class="motion-info"><div class="motion-title">Social Reel — Producto</div><div class="motion-meta">Social Media · Premiere · 15s</div></div>
+    </div>
+
+    <!-- Motion 3 -->
+    <div class="motion-item reveal-scale" data-category="uimotion"
+         data-popup-type="video"
+         data-popup-title="Micro-interactions — App UI"
+         data-popup-cat="UI Animation"
+         data-popup-caption="Set de micro-interacciones para app móvil: transiciones de pantalla, animaciones de carga, feedback de botones y estados de navegación."
+         data-popup-meta="Lottie,After Effects"
+         data-popup-video="https://www.youtube.com/embed/dQw4W9WcXcQ?autoplay=0&mute=1">
+      <div class="motion-thumb">
+        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect fill="#161616" width="480" height="300"/><rect x="170" y="20" width="140" height="260" rx="12" stroke="#555" stroke-width="2" fill="none"/><rect x="186" y="40" width="108" height="8" rx="2" fill="#333"/><rect x="186" y="56" width="108" height="50" rx="6" fill="#1b2d1b"/><rect x="186" y="114" width="42" height="42" rx="6" fill="#222"/><rect x="234" y="114" width="60" height="42" rx="6" fill="#222"/></svg>
+        <div class="motion-play-icon">▶</div>
+      </div>
+      <div class="motion-info"><div class="motion-title">Micro-interactions — App UI</div><div class="motion-meta">UI Animation · Lottie · 30s</div></div>
+    </div>
+
+    <!-- Motion 4 -->
+    <div class="motion-item reveal-scale" data-category="brandmotion"
+         data-popup-type="carousel"
+         data-popup-title="Logo Reveal — Marca Tech"
+         data-popup-cat="Brand Motion"
+         data-popup-caption="Animación de revelado de logotipo para marca de tecnología. Efecto de partículas que convergen formando el isotipo final."
+         data-popup-meta="After Effects,5s"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><circle cx=%22400%22 cy=%22250%22 r=%22100%22 stroke=%22%2300ff88%22 stroke-width=%221%22 fill=%22none%22 opacity=%220.2%22/><circle cx=%22400%22 cy=%22250%22 r=%224%22 fill=%22%2300ff88%22/><text x=%22400%22 y=%22400%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Frame: Partículas iniciales</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><circle cx=%22400%22 cy=%22250%22 r=%2280%22 stroke=%22%2300ff88%22 stroke-width=%222%22 fill=%22none%22 opacity=%220.5%22/><text x=%22400%22 y=%22258%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2240%22 fill=%22%23fff%22>B</text><text x=%22400%22 y=%22400%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Frame: Logo reveal</text></svg>"}
+         ]'>
+      <div class="motion-thumb">
+        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect fill="#161616" width="480" height="300"/><circle cx="240" cy="150" r="80" stroke="#555" stroke-width="1.5" fill="none"/><text x="240" y="158" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="48" fill="#f0f0f0" opacity="0.7">B</text></svg>
+        <div class="motion-play-icon">▶</div>
+      </div>
+      <div class="motion-info"><div class="motion-title">Logo Reveal — Marca Tech</div><div class="motion-meta">Brand Motion · After Effects · 5s</div></div>
+    </div>
+
+    <!-- Motion 5 -->
+    <div class="motion-item reveal-scale" data-category="explainer"
+         data-popup-type="video"
+         data-popup-title="Process Explainer — E-learning"
+         data-popup-cat="Explainer Video"
+         data-popup-caption="Video explicativo de 90 segundos para plataforma e-learning. Animación de infografía con transiciones suaves y narrativa visual clara."
+         data-popup-meta="After Effects,90s"
+         data-popup-video="https://www.youtube.com/embed/dQw4W9WcXcQ?autoplay=0&mute=1">
+      <div class="motion-thumb">
+        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect fill="#161616" width="480" height="300"/><rect x="40" y="40" width="400" height="220" rx="8" fill="#1a2e2e"/><circle cx="140" cy="150" r="40" stroke="#00ff88" stroke-width="1.5" fill="none" opacity="0.6"/><line x1="185" y1="150" x2="340" y2="150" stroke="#00ff88" stroke-width="1.5" opacity="0.6"/><circle cx="340" cy="150" r="25" fill="#00ff88" opacity="0.3"/></svg>
+        <div class="motion-play-icon">▶</div>
+      </div>
+      <div class="motion-info"><div class="motion-title">Process Explainer — E-learning</div><div class="motion-meta">Explainer · After Effects · 90s</div></div>
+    </div>
+
+    <!-- Motion 6 -->
+    <div class="motion-item reveal-scale" data-category="social"
+         data-popup-type="carousel"
+         data-popup-title="Story Series — Evento"
+         data-popup-cat="Social Media"
+         data-popup-caption="Serie de 5 stories animadas para evento corporativo. Cada pieza mantenía consistencia de marca con variaciones de contenido."
+         data-popup-meta="Premiere,5 piezas"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22250%22 y=%2230%22 width=%22300%22 height=%22440%22 rx=%2216%22 fill=%22%232e2e1a%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Story 1 — Save the Date</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22250%22 y=%2230%22 width=%22300%22 height=%22440%22 rx=%2216%22 fill=%22%2346461a%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Story 2 — Speakers</text></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 500%22><rect fill=%22%23161616%22 width=%22800%22 height=%22500%22/><rect x=%22250%22 y=%2230%22 width=%22300%22 height=%22440%22 rx=%2216%22 fill=%22%233a3a1a%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Story 3 — Countdown</text></svg>"}
+         ]'>
+      <div class="motion-thumb">
+        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg"><rect fill="#161616" width="480" height="300"/><rect x="100" y="40" width="280" height="220" rx="8" fill="#2e2e1a"/><rect x="120" y="220" width="240" height="12" rx="6" fill="#555" opacity="0.3"/><rect x="120" y="220" width="150" height="12" rx="6" fill="#00ff88" opacity="0.8"/></svg>
+        <div class="motion-play-icon">▶</div>
+      </div>
+      <div class="motion-info"><div class="motion-title">Story Series — Evento</div><div class="motion-meta">Social Media · Premiere · 5 piezas</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== WebUI ==================== -->
+<section class="section" id="webui">
+  <div class="section-header">
+    <div class="section-label reveal-up">03 — Web & UI Design</div>
+    <h2 class="section-title reveal-up">Interfaces que<br>funcionan.</h2>
+    <p class="section-subtitle reveal-up">Diseño de productos digitales centrados en el usuario, con foco en usabilidad, accesibilidad y conversión.</p>
+  </div>
+
+  <div class="projects-filter reveal-up">
+    <button class="filter-btn active" data-filter="all" data-group="webui">Todos</button>
+    <button class="filter-btn" data-filter="web" data-group="webui">Web Design</button>
+    <button class="filter-btn" data-filter="uxui" data-group="webui">UX/UI</button>
+    <button class="filter-btn" data-filter="app" data-group="webui">Apps</button>
+  </div>
+
+  <!-- WebUI Project 1 -->
+  <div class="webui-project reveal-up" data-category="web"
+       data-popup-type="carousel"
+       data-popup-title="Tirando Fruta"
+       data-popup-cat="E-commerce + Brand Digital"
+       data-popup-caption="E-commerce completo que refleja la identidad artesanal de la marca. +40% en tasa de conversión vs sitio anterior. Lanzamiento en 3 semanas."
+       data-popup-meta="Figma,HTML,SASS,JavaScript,WooCommerce"
+       data-popup-slides='[
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%2230%22 y=%2220%22 width=%22840%22 height=%2240%22 rx=%226%22 fill=%22%231a1a1a%22/><circle cx=%2255%22 cy=%2240%22 r=%226%22 fill=%22%23555%22/><circle cx=%2275%22 cy=%2240%22 r=%226%22 fill=%22%23555%22/><circle cx=%2295%22 cy=%2240%22 r=%226%22 fill=%22%23555%22/><rect x=%22350%22 y=%2234%22 width=%22200%22 height=%2212%22 rx=%226%22 fill=%22%23333%22/><rect x=%2250%22 y=%2290%22 width=%22500%22 height=%2230%22 rx=%226%22 fill=%22%23222%22/><rect x=%2250%22 y=%22140%22 width=%22600%22 height=%2212%22 rx=%224%22 fill=%22%23222%22/><rect x=%2250%22 y=%22160%22 width=%22500%22 height=%2212%22 rx=%224%22 fill=%22%23222%22/><rect x=%2250%22 y=%22190%22 width=%22140%22 height=%2244%22 rx=%2222%22 fill=%22%2300ff88%22 opacity=%220.8%22/><rect x=%22620%22 y=%2290%22 width=%22240%22 height=%22180%22 rx=%2210%22 fill=%22%231a1a2e%22/><rect x=%2250%22 y=%22300%22 width=%22260%22 height=%22260%22 rx=%2210%22 fill=%22%23222%22/><rect x=%22340%22 y=%22300%22 width=%22260%22 height=%22260%22 rx=%2210%22 fill=%22%23222%22/><rect x=%22630%22 y=%22300%22 width=%22240%22 height=%22260%22 rx=%2210%22 fill=%22%23222%22/></svg>"},
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%22250%22 y=%2220%22 width=%22400%22 height=%22560%22 rx=%2220%22 fill=%22%231a1a1a%22 stroke=%22%23333%22 stroke-width=%222%22/><rect x=%22270%22 y=%2260%22 width=%22360%22 height=%22480%22 rx=%224%22 fill=%22%231a1a2e%22/><text x=%22450%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Vista Mobile — Product Detail</text></svg>"},
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%2250%22 y=%2240%22 width=%22800%22 height=%22520%22 rx=%228%22 fill=%22%23111%22/><text x=%22450%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Vista Desktop — Checkout</text></svg>"}
+       ]'>
+    <div class="webui-device">
+      <div class="webui-mockup">
+        <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#111;">
+          <rect width="500" height="300" fill="#161616"/>
+          <rect x="0" y="0" width="500" height="32" fill="#1a1a1a"/>
+          <circle cx="20" cy="16" r="4" fill="#555"/><circle cx="36" cy="16" r="4" fill="#555"/><circle cx="52" cy="16" r="4" fill="#555"/>
+          <rect x="160" y="12" width="180" height="8" rx="4" fill="#333"/>
+          <rect x="40" y="60" width="200" height="20" rx="4" fill="#222"/>
+          <rect x="40" y="90" width="300" height="8" rx="4" fill="#222"/>
+          <rect x="40" y="106" width="260" height="8" rx="4" fill="#222"/>
+          <rect x="40" y="130" width="100" height="36" rx="18" fill="#00ff88" opacity="0.8"/>
+          <rect x="300" y="60" width="160" height="120" rx="8" fill="#222"/>
+          <rect x="300" y="60" width="160" height="60" rx="8" fill="#1a1a2e"/>
+          <rect x="40" y="190" width="130" height="80" rx="8" fill="#222"/>
+          <rect x="190" y="190" width="130" height="80" rx="8" fill="#222"/>
+          <rect x="340" y="190" width="120" height="80" rx="8" fill="#222"/>
+        </svg>
+      </div>
+    </div>
+    <div class="webui-details">
+      <div class="webui-client">Tirando Fruta</div>
+      <h3 class="webui-name">E-commerce + Brand Digital</h3>
+      <dl class="webui-brief">
+        <dt>Desafío</dt><dd>Crear tienda online que refleje identidad artesanal y maximice conversiones.</dd>
+        <dt>Solución</dt><dd>UI en Figma, desarrollo responsive con HTML/SASS/JS, WooCommerce.</dd>
+        <dt>Resultado</dt><dd>+40% en tasa de conversión. Lanzamiento en 3 semanas.</dd>
+      </dl>
+      <div class="webui-tech"><span>Figma</span><span>HTML</span><span>SASS</span><span>JS</span><span>WooCommerce</span></div>
+      <div class="webui-cta-row">Ver caso completo →</div>
+    </div>
+  </div>
+
+  <!-- WebUI Project 2 -->
+  <div class="webui-project reveal-up" data-category="uxui"
+       data-popup-type="carousel"
+       data-popup-title="Innergiving"
+       data-popup-cat="Plataforma de bienestar"
+       data-popup-caption="Plataforma de meditación y bienestar digital. 85% de satisfacción en testing de usabilidad. Diseño centrado en la experiencia emocional del usuario."
+       data-popup-meta="Figma,Prototyping,Design System"
+       data-popup-slides='[
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%2230%22 y=%2220%22 width=%22840%22 height=%22560%22 rx=%228%22 fill=%22%231a1a1a%22/><rect x=%2250%22 y=%2260%22 width=%22800%22 height=%22200%22 rx=%2212%22 fill=%22%231a1a2e%22/><rect x=%2280%22 y=%22110%22 width=%22300%22 height=%2216%22 rx=%226%22 fill=%22%2300ff88%22 opacity=%220.3%22/><rect x=%2280%22 y=%22140%22 width=%22500%22 height=%2210%22 rx=%224%22 fill=%22%23333%22/><rect x=%2280%22 y=%22160%22 width=%22400%22 height=%2210%22 rx=%224%22 fill=%22%23333%22/><rect x=%2250%22 y=%22300%22 width=%22380%22 height=%22250%22 rx=%2210%22 fill=%22%23222%22/><rect x=%22470%22 y=%22300%22 width=%22380%22 height=%22250%22 rx=%2210%22 fill=%22%23222%22/><text x=%22450%22 y=%22440%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Vista Dashboard</text></svg>"},
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%22300%22 y=%2220%22 width=%22300%22 height=%22560%22 rx=%2220%22 fill=%22%231a1a1a%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22450%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Vista Mobile</text></svg>"}
+       ]'>
+    <div class="webui-device">
+      <div class="webui-mockup">
+        <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#111;">
+          <rect width="500" height="300" fill="#161616"/>
+          <rect x="0" y="0" width="500" height="32" fill="#1a1a1a"/>
+          <circle cx="20" cy="16" r="4" fill="#555"/><circle cx="36" cy="16" r="4" fill="#555"/><circle cx="52" cy="16" r="4" fill="#555"/>
+          <rect x="200" y="12" width="100" height="8" rx="4" fill="#333"/>
+          <rect x="40" y="60" width="420" height="100" rx="8" fill="#1a1a2e"/>
+          <rect x="60" y="80" width="200" height="12" rx="4" fill="#00ff88" opacity="0.3"/>
+          <rect x="60" y="100" width="300" height="8" rx="4" fill="#333"/>
+          <rect x="60" y="116" width="250" height="8" rx="4" fill="#333"/>
+          <rect x="60" y="136" width="80" height="16" rx="8" fill="#00ff88" opacity="0.6"/>
+          <rect x="40" y="180" width="200" height="90" rx="8" fill="#222"/>
+          <rect x="260" y="180" width="200" height="90" rx="8" fill="#222"/>
+        </svg>
+      </div>
+    </div>
+    <div class="webui-details">
+      <div class="webui-client">Innergiving</div>
+      <h3 class="webui-name">Plataforma de bienestar digital</h3>
+      <dl class="webui-brief">
+        <dt>Desafío</dt><dd>Diseñar plataforma intuitiva de meditación con alta retención de usuarios.</dd>
+        <dt>Solución</dt><dd>Research, wireframes, prototipo interactivo, diseño UI completo y handoff.</dd>
+        <dt>Resultado</dt><dd>85% satisfacción en testing de usabilidad.</dd>
+      </dl>
+      <div class="webui-tech"><span>Figma</span><span>Prototyping</span><span>Design System</span><span>Handoff</span></div>
+      <div class="webui-cta-row">Ver caso completo →</div>
+    </div>
+  </div>
+
+  <!-- WebUI Project 3 -->
+  <div class="webui-project reveal-up" data-category="app"
+       data-popup-type="carousel"
+       data-popup-title="Kydak Dashboard"
+       data-popup-cat="Mobile App — Analytics"
+       data-popup-caption="Rediseño mobile de un dashboard de datos complejos para usuarios no técnicos. Reducción del 60% en tiempo para encontrar métricas clave."
+       data-popup-meta="Figma,React Native,Data Viz"
+       data-popup-slides='[
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%22300%22 y=%2220%22 width=%22300%22 height=%22560%22 rx=%2220%22 fill=%22%231a1a1a%22 stroke=%22%23333%22 stroke-width=%222%22/><rect x=%22320%22 y=%2250%22 width=%22260%22 height=%22490%22 rx=%224%22 fill=%22%23111%22/><rect x=%22335%22 y=%2270%22 width=%22230%22 height=%22120%22 rx=%228%22 fill=%22%231a1a2e%22/><rect x=%22335%22 y=%22210%22 width=%22110%22 height=%22110%22 rx=%228%22 fill=%22%23222%22/><rect x=%22455%22 y=%22210%22 width=%22110%22 height=%22110%22 rx=%228%22 fill=%22%23222%22/><text x=%22450%22 y=%22380%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Dashboard Mobile</text></svg>"},
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%2250%22 y=%2240%22 width=%22800%22 height=%22520%22 rx=%228%22 fill=%22%23111%22/><rect x=%2270%22 y=%2270%22 width=%22350%22 height=%22460%22 rx=%228%22 fill=%22%231a1a1a%22/><rect x=%22450%22 y=%2270%22 width=%22380%22 height=%22460%22 rx=%228%22 fill=%22%231a1a1a%22/><text x=%22450%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Diseño System — Componentes</text></svg>"}
+       ]'>
+    <div class="webui-device">
+      <div class="webui-mockup">
+        <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#111;">
+          <rect width="500" height="300" fill="#161616"/>
+          <rect x="180" y="10" width="140" height="280" rx="16" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+          <rect x="230" y="18" width="40" height="6" rx="3" fill="#333"/>
+          <rect x="196" y="40" width="108" height="180" rx="4" fill="#111"/>
+          <rect x="204" y="48" width="92" height="8" rx="2" fill="#222"/>
+          <rect x="204" y="64" width="92" height="50" rx="6" fill="#1a1a2e"/>
+          <rect x="204" y="122" width="42" height="42" rx="6" fill="#222"/>
+          <rect x="252" y="122" width="44" height="42" rx="6" fill="#222"/>
+        </svg>
+      </div>
+    </div>
+    <div class="webui-details">
+      <div class="webui-client">Kydak</div>
+      <h3 class="webui-name">Dashboard analytics — Mobile App</h3>
+      <dl class="webui-brief">
+        <dt>Desafío</dt><dd>Rediseñar experiencia mobile de un dashboard de datos complejos.</dd>
+        <dt>Solución</dt><dd>Simplificación de métricas, navegación por gestos, gráficos claros.</dd>
+        <dt>Resultado</dt><dd>-60% tiempo para encontrar métricas clave.</dd>
+      </dl>
+      <div class="webui-tech"><span>Figma</span><span>React Native</span><span>Data Viz</span><span>User Testing</span></div>
+      <div class="webui-cta-row">Ver caso completo →</div>
+    </div>
+  </div>
+
+  <!-- WebUI Project 4 -->
+  <div class="webui-project reveal-up" data-category="web"
+       data-popup-type="carousel"
+       data-popup-title="Quintana Landing"
+       data-popup-cat="Landing page corporativa"
+       data-popup-caption="Landing one-page para empresa de servicios. +55% de leads orgánicos en el primer mes post-lanzamiento. Animaciones sutiles y CTA estratégicos."
+       data-popup-meta="Figma,WordPress,GSAP,Responsive"
+       data-popup-slides='[
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%2230%22 y=%2220%22 width=%22840%22 height=%22560%22 rx=%228%22 fill=%22%231a1a1a%22/><rect x=%2250%22 y=%2260%22 width=%22800%22 height=%22220%22 rx=%2210%22 fill=%22%231a1a2e%22/><rect x=%2280%22 y=%22110%22 width=%22400%22 height=%2218%22 rx=%226%22 fill=%22%2300ff88%22 opacity=%220.4%22/><rect x=%2280%22 y=%22140%22 width=%22500%22 height=%2210%22 rx=%224%22 fill=%22%23444%22/><rect x=%2280%22 y=%22156%22 width=%22450%22 height=%2210%22 rx=%224%22 fill=%22%23444%22/><rect x=%2280%22 y=%22184%22 width=%22120%22 height=%2240%22 rx=%2220%22 fill=%22%2300ff88%22 opacity=%220.7%22/><rect x=%2250%22 y=%22310%22 width=%22250%22 height=%22250%22 rx=%2210%22 fill=%22%23222%22/><rect x=%22325%22 y=%22310%22 width=%22250%22 height=%22250%22 rx=%2210%22 fill=%22%23222%22/><rect x=%22600%22 y=%22310%22 width=%22250%22 height=%22250%22 rx=%2210%22 fill=%22%23222%22/><text x=%22450%22 y=%22500%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Landing Page — Vista Desktop</text></svg>"},
+         {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22><rect fill=%22%23161616%22 width=%22900%22 height=%22600%22/><rect x=%22300%22 y=%2220%22 width=%22300%22 height=%22560%22 rx=%2220%22 fill=%22%231a1a1a%22 stroke=%22%23333%22 stroke-width=%222%22/><text x=%22450%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Vista Mobile Responsive</text></svg>"}
+       ]'>
+    <div class="webui-device">
+      <div class="webui-mockup">
+        <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:#111;">
+          <rect width="500" height="300" fill="#161616"/>
+          <rect x="0" y="0" width="500" height="32" fill="#1a1a1a"/>
+          <circle cx="20" cy="16" r="4" fill="#555"/><circle cx="36" cy="16" r="4" fill="#555"/><circle cx="52" cy="16" r="4" fill="#555"/>
+          <rect x="160" y="12" width="180" height="8" rx="4" fill="#333"/>
+          <rect x="0" y="32" width="500" height="120" fill="#1a1a2e"/>
+          <rect x="60" y="60" width="250" height="12" rx="4" fill="#00ff88" opacity="0.4"/>
+          <rect x="60" y="80" width="350" height="8" rx="4" fill="#444"/>
+          <rect x="60" y="96" width="280" height="8" rx="4" fill="#444"/>
+          <rect x="60" y="116" width="100" height="28" rx="14" fill="#00ff88" opacity="0.7"/>
+          <rect x="40" y="170" width="130" height="100" rx="8" fill="#222"/>
+          <rect x="190" y="170" width="130" height="100" rx="8" fill="#222"/>
+          <rect x="340" y="170" width="120" height="100" rx="8" fill="#222"/>
+        </svg>
+      </div>
+    </div>
+    <div class="webui-details">
+      <div class="webui-client">Quintana</div>
+      <h3 class="webui-name">Landing page corporativa</h3>
+      <dl class="webui-brief">
+        <dt>Desafío</dt><dd>Modernizar presencia web con diseño profesional y claro.</dd>
+        <dt>Solución</dt><dd>Diseño one-page, animaciones sutiles, CTA estratégicos.</dd>
+        <dt>Resultado</dt><dd>+55% leads orgánicos primer mes.</dd>
+      </dl>
+      <div class="webui-tech"><span>Figma</span><span>WordPress</span><span>GSAP</span><span>Responsive</span></div>
+      <div class="webui-cta-row">Ver caso completo →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== AiDESIGN ==================== -->
+<section class="section" id="aidesign">
+  <div class="section-header">
+    <div class="section-label reveal-up">04 — AI-Enhanced Design</div>
+    <h2 class="section-title reveal-up">Innovación con<br>inteligencia.</h2>
+    <p class="section-subtitle reveal-up">Integro herramientas de IA generativa para acelerar ideación, prototipado y exploración visual — sin perder el criterio humano.</p>
+  </div>
+
+  <div class="ai-workflow reveal-up">
+    <div class="ai-step"><div class="ai-step-number">01</div><div class="ai-step-label">Brief</div><div class="ai-step-sublabel">Definición</div></div>
+    <div class="ai-connector"></div>
+    <div class="ai-step"><div class="ai-step-number">02</div><div class="ai-step-label">AI Exploration</div><div class="ai-step-sublabel">Flux / Wan / ComfyUI</div></div>
+    <div class="ai-connector"></div>
+    <div class="ai-step"><div class="ai-step-number">03</div><div class="ai-step-label">Curaduría</div><div class="ai-step-sublabel">Selección humana</div></div>
+    <div class="ai-connector"></div>
+    <div class="ai-step"><div class="ai-step-number">04</div><div class="ai-step-label">Refinamiento</div><div class="ai-step-sublabel">Dirección creativa</div></div>
+    <div class="ai-connector"></div>
+    <div class="ai-step"><div class="ai-step-number">05</div><div class="ai-step-label">Entrega</div><div class="ai-step-sublabel">Assets finales</div></div>
+  </div>
+
+  <div class="ai-principles">
+    <div class="ai-principle reveal-up"><div class="ai-principle-icon">🔍</div><h4 class="ai-principle-title">Transparencia</h4><p class="ai-principle-desc">Siempre comunico al cliente cuándo y cómo uso IA en el proceso creativo.</p></div>
+    <div class="ai-principle reveal-up"><div class="ai-principle-icon">✋</div><h4 class="ai-principle-title">Curaduría humana</h4><p class="ai-principle-desc">La IA genera opciones, el criterio humano selecciona y refina la mejor dirección.</p></div>
+    <div class="ai-principle reveal-up"><div class="ai-principle-icon">⚖️</div><h4 class="ai-principle-title">Ética y derechos</h4><p class="ai-principle-desc">Respeto derechos de autor, licencias y las normativas emergentes sobre IA.</p></div>
+  </div>
+
+  <div class="ai-quote reveal-up">
+    <p class="ai-quote-text">La IA es mi copiloto, no el piloto. Acelera la exploración, pero la dirección creativa siempre es humana.</p>
+    <p class="ai-quote-author">— Luciano Cotto</p>
+  </div>
+
+  <div class="projects-filter reveal-up">
+    <button class="filter-btn active" data-filter="all" data-group="ai">Todos</button>
+    <button class="filter-btn" data-filter="concept" data-group="ai">Concept</button>
+    <button class="filter-btn" data-filter="exploration" data-group="ai">Exploration</button>
+    <button class="filter-btn" data-filter="production" data-group="ai">Production</button>
+  </div>
+
+  <div class="ai-gallery reveal-up" id="aiGallery">
+    <div class="ai-gallery-item" data-category="concept"
+         data-popup-type="carousel"
+         data-popup-title="AI Concept 01"
+         data-popup-cat="Concept"
+         data-popup-caption="Exploración de formas orgánicas generadas con Flux, curadas y refinadas en Photoshop para composición final."
+         data-popup-meta="Flux,ComfyUI,Photoshop"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag1%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%231a1a2e%22/><stop offset=%22100%25%22 style=%22stop-color:%230f3460%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag1)%22/><circle cx=%22400%22 cy=%22280%22 r=%22140%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><circle cx=%22400%22 cy=%22280%22 r=%2290%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.5%22/><circle cx=%22400%22 cy=%22280%22 r=%2240%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.8%22/><circle cx=%22400%22 cy=%22280%22 r=%228%22 fill=%22%2300ff88%22/></svg>"},
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag1)%22/><text x=%22400%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23888%22>Variación generada por IA — Iteración 2</text></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <rect width="300" height="300" fill="url(#g1)"/><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a1a2e"/><stop offset="100%" style="stop-color:#0f3460"/></linearGradient></defs>
+        <circle cx="150" cy="120" r="60" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+        <circle cx="150" cy="120" r="40" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.5"/>
+        <circle cx="150" cy="120" r="20" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.8"/>
+        <circle cx="150" cy="120" r="4" fill="#00ff88"/>
+        <text x="150" y="240" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">AI CONCEPT 01</text>
+      </svg>
+      <span class="ai-gallery-tag">Concept</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="exploration"
+         data-popup-type="carousel"
+         data-popup-title="Exploration 02"
+         data-popup-cat="Exploration"
+         data-popup-caption="Exploración de composiciones geométricas generadas con ComfyUI. Múltiples variaciones evaluadas para encontrar la mejor dirección visual."
+         data-popup-meta="ComfyUI,Flux"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag2%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%232d1b3d%22/><stop offset=%22100%25%22 style=%22stop-color:%234a1942%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag2)%22/><rect x=%22180%22 y=%22120%22 width=%22440%22 height=%22360%22 rx=%228%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><rect x=%22240%22 y=%22180%22 width=%22320%22 height=%22240%22 rx=%228%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.5%22/><rect x=%22300%22 y=%22240%22 width=%22200%22 height=%22120%22 rx=%228%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.8%22/><line x1=%22180%22 y1=%22120%22 x2=%22620%22 y2=%22480%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.2%22/><line x1=%22620%22 y1=%22120%22 x2=%22180%22 y2=%22480%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.2%22/></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2d1b3d"/><stop offset="100%" style="stop-color:#4a1942"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g2)"/>
+        <rect x="60" y="60" width="180" height="180" rx="8" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+        <rect x="90" y="90" width="120" height="120" rx="8" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.5"/>
+        <rect x="120" y="120" width="60" height="60" rx="8" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.8"/>
+        <text x="150" y="280" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">EXPLORATION 02</text>
+      </svg>
+      <span class="ai-gallery-tag">Exploration</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="production"
+         data-popup-type="carousel"
+         data-popup-title="Production 03"
+         data-popup-cat="Production"
+         data-popup-caption="Imagen final generada con IA y refinada para uso comercial en campaña de marca. Dirección de arte humana aplicada en prompt engineering y post-producción."
+         data-popup-meta="Flux,Photoshop"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag3%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%231b2d1b%22/><stop offset=%22100%25%22 style=%22stop-color:%230f4630%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag3)%22/><path d=%22M400 80 L680 520 L120 520 Z%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><path d=%22M400 140 L620 480 L180 480 Z%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.5%22/><path d=%22M400 200 L560 440 L240 440 Z%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.8%22/><circle cx=%22400%22 cy=%22360%22 r=%2216%22 fill=%22%2300ff88%22 opacity=%220.6%22/></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1b2d1b"/><stop offset="100%" style="stop-color:#0f4630"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g3)"/>
+        <path d="M150 40 L260 260 L40 260 Z" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+        <path d="M150 80 L230 240 L70 240 Z" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.5"/>
+        <path d="M150 120 L200 220 L100 220 Z" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.8"/>
+        <circle cx="150" cy="180" r="8" fill="#00ff88" opacity="0.6"/>
+        <text x="150" y="290" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">PRODUCTION 03</text>
+      </svg>
+      <span class="ai-gallery-tag">Production</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="concept"
+         data-popup-type="carousel"
+         data-popup-title="AI Concept 04"
+         data-popup-cat="Concept"
+         data-popup-caption="Estudio de composiciones circulares generadas con Wan. Exploración de patrones orgánicos para textura de fondo."
+         data-popup-meta="Wan,ComfyUI"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag4%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%232e1a1a%22/><stop offset=%22100%25%22 style=%22stop-color:%23462020%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag4)%22/><circle cx=%22280%22 cy=%22280%22 r=%22120%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><circle cx=%22520%22 cy=%22280%22 r=%22120%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><circle cx=%22400%22 cy=%22380%22 r=%22120%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.6%22/><circle cx=%22400%22 cy=%22320%22 r=%2230%22 fill=%22%2300ff88%22 opacity=%220.4%22/></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2e1a1a"/><stop offset="100%" style="stop-color:#462020"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g4)"/>
+        <circle cx="100" cy="130" r="50" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+        <circle cx="200" cy="130" r="50" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+        <circle cx="150" cy="180" r="50" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.6"/>
+        <circle cx="150" cy="150" r="15" fill="#00ff88" opacity="0.4"/>
+        <text x="150" y="270" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">AI CONCEPT 04</text>
+      </svg>
+      <span class="ai-gallery-tag">Concept</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="exploration"
+         data-popup-type="carousel"
+         data-popup-title="Exploration 05"
+         data-popup-cat="Exploration"
+         data-popup-caption="Iteraciones de formas concéntricas generadas con IA para exploración de identidad visual. 40+ variaciones, 3 seleccionadas."
+         data-popup-meta="Flux,ComfyUI"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag5%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%231a2e2e%22/><stop offset=%22100%25%22 style=%22stop-color:%231a4646%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag5)%22/><rect x=%22150%22 y=%2280%22 width=%22500%22 height=%22440%22 rx=%22250%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.2%22/><rect x=%22220%22 y=%22150%22 width=%22360%22 height=%22300%22 rx=%22180%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%22290%22 y=%22220%22 width=%22220%22 height=%22160%22 rx=%22110%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.7%22/><rect x=%22355%22 y=%22285%22 width=%2290%22 height=%2230%22 rx=%2245%22 fill=%22%2300ff88%22 opacity=%220.3%22/></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a2e2e"/><stop offset="100%" style="stop-color:#1a4646"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g5)"/>
+        <rect x="50" y="50" width="200" height="200" rx="100" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.2"/>
+        <rect x="80" y="80" width="140" height="140" rx="70" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <rect x="110" y="110" width="80" height="80" rx="40" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.7"/>
+        <rect x="135" y="135" width="30" height="30" rx="15" fill="#00ff88" opacity="0.3"/>
+        <text x="150" y="280" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">EXPLORATION 05</text>
+      </svg>
+      <span class="ai-gallery-tag">Exploration</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="production"
+         data-popup-type="carousel"
+         data-popup-title="Production 06"
+         data-popup-cat="Production"
+         data-popup-caption="Visualización de datos generativa para presentación corporativa. Gráfico de red generado con IA, refinado con dirección creativa humana."
+         data-popup-meta="Flux,Illustrator"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag6%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%232e2e1a%22/><stop offset=%22100%25%22 style=%22stop-color:%2346461a%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag6)%22/><line x1=%22100%22 y1=%22300%22 x2=%22700%22 y2=%22300%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><line x1=%22400%22 y1=%22100%22 x2=%22400%22 y2=%22500%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><circle cx=%22250%22 cy=%22220%22 r=%2230%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.6%22/><circle cx=%22550%22 cy=%22220%22 r=%2230%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.6%22/><circle cx=%22400%22 cy=%22400%22 r=%2230%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.6%22/><circle cx=%22250%22 cy=%22220%22 r=%228%22 fill=%22%2300ff88%22 opacity=%220.8%22/><circle cx=%22550%22 cy=%22220%22 r=%228%22 fill=%22%2300ff88%22 opacity=%220.8%22/><circle cx=%22400%22 cy=%22400%22 r=%228%22 fill=%22%2300ff88%22 opacity=%220.8%22/><line x1=%22250%22 y1=%22220%22 x2=%22550%22 y2=%22220%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><line x1=%22250%22 y1=%22220%22 x2=%22400%22 y2=%22400%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><line x1=%22550%22 y1=%22220%22 x2=%22400%22 y2=%22400%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2e2e1a"/><stop offset="100%" style="stop-color:#46461a"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g6)"/>
+        <line x1="30" y1="150" x2="270" y2="150" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+        <line x1="150" y1="30" x2="150" y2="270" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+        <circle cx="80" cy="100" r="15" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.6"/>
+        <circle cx="220" cy="100" r="15" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.6"/>
+        <circle cx="150" cy="200" r="15" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.6"/>
+        <text x="150" y="280" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">PRODUCTION 06</text>
+      </svg>
+      <span class="ai-gallery-tag">Production</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="concept"
+         data-popup-type="carousel"
+         data-popup-title="AI Concept 07"
+         data-popup-cat="Concept"
+         data-popup-caption="Matriz de exploración de patrones generativos. Cada celda representa una variación de prompt con diferentes parámetros de seed y scale."
+         data-popup-meta="Flux,ComfyUI"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag7%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%231a1a3e%22/><stop offset=%22100%25%22 style=%22stop-color:%232d1b4d%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag7)%22/><rect x=%2280%22 y=%2260%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%22260%22 y=%2260%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%22440%22 y=%2260%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%2280%22 y=%22240%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22%2300ff88%22 opacity=%220.15%22 stroke=%22%2300ff88%22 stroke-width=%221%22 opacity=%220.7%22/><rect x=%22260%22 y=%22240%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%22440%22 y=%22240%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%2280%22 y=%22420%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%22260%22 y=%22420%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><rect x=%22440%22 y=%22420%22 width=%22160%22 height=%22160%22 rx=%224%22 fill=%22none%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.4%22/><text x=%22340%22 y=%22580%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2212%22 fill=%22%23555%22>Matriz de exploración — 9 variaciones</text></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a1a3e"/><stop offset="100%" style="stop-color:#2d1b4d"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g7)"/>
+        <rect x="30" y="30" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <rect x="100" y="30" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <rect x="170" y="30" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <rect x="30" y="100" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.7"/>
+        <rect x="100" y="100" width="60" height="60" rx="4" fill="#00ff88" opacity="0.15"/>
+        <rect x="170" y="100" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="1" opacity="0.7"/>
+        <rect x="30" y="170" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <rect x="100" y="170" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <rect x="170" y="170" width="60" height="60" rx="4" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+        <text x="150" y="280" text-anchor="middle" font-family="monospace" font-size="10" fill="#555" letter-spacing="4">AI CONCEPT 07</text>
+      </svg>
+      <span class="ai-gallery-tag">Concept</span>
+    </div>
+
+    <div class="ai-gallery-item" data-category="production"
+         data-popup-type="carousel"
+         data-popup-title="Production 08"
+         data-popup-cat="Production"
+         data-popup-caption="Pieza final para campaña visual utilizando IA generativa como herramienta de ideación. Post-producción y refinamiento en Photoshop."
+         data-popup-meta="Flux,ComfyUI,Photoshop"
+         data-popup-slides='[
+           {"type":"svg","src":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect fill=%22%230a0a0a%22 width=%22800%22 height=%22600%22/><defs><linearGradient id=%22ag8%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 style=%22stop-color:%231a3e1a%22/><stop offset=%22100%25%22 style=%22stop-color:%232d4d1b%22/></linearGradient></defs><rect width=%22800%22 height=%22600%22 fill=%22url(%23ag8)%22/><text x=%22400%22 y=%22260%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%22100%22 fill=%22%2300ff88%22 opacity=%220.15%22>AI</text><text x=%22400%22 y=%22340%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2218%22 fill=%22%23888%22 letter-spacing=%2212%22>DESIGN</text><line x1=%22150%22 y1=%22380%22 x2=%22650%22 y2=%22380%22 stroke=%22%2300ff88%22 stroke-width=%220.5%22 opacity=%220.3%22/><text x=%22400%22 y=%22420%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2212%22 fill=%22%2300ff88%22 opacity=%220.5%22 letter-spacing=%226%22>FLUX · COMFYUI · WAN</text></svg>"}
+         ]'>
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="300" fill="#111"/>
+        <defs><linearGradient id="g8" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a3e1a"/><stop offset="100%" style="stop-color:#2d4d1b"/></linearGradient></defs>
+        <rect width="300" height="300" fill="url(#g8)"/>
+        <text x="150" y="140" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="48" fill="#00ff88" opacity="0.15">AI</text>
+        <text x="150" y="180" text-anchor="middle" font-family="monospace" font-size="12" fill="#555" letter-spacing="8">DESIGN</text>
+        <text x="150" y="230" text-anchor="middle" font-family="monospace" font-size="9" fill="#00ff88" opacity="0.5" letter-spacing="4">FLUX · COMFYUI · WAN</text>
+      </svg>
+      <span class="ai-gallery-tag">Production</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section class="contact-section" id="contact">
+  <div class="contact-grid">
+    <div>
+      <div class="section-label reveal-up">Contacto</div>
+      <h2 class="contact-headline reveal-up">¿Listo para crear algo<br><span style="color:var(--accent);">extraordinario?</span></h2>
+      <p class="contact-sub reveal-up">Trabajo remoto con equipos globales. Si tenés un proyecto en mente, hablemos.</p>
+      <div class="contact-links reveal-up">
+        <a href="mailto:hola@lucianocotto.com" class="contact-link"><span class="contact-link-icon">✉</span><span>hola@lucianocotto.com</span></a>
+        <a href="https://wa.me/5491100000000" target="_blank" class="contact-link"><span class="contact-link-icon">💬</span><span>WhatsApp</span></a>
+        <a href="https://linkedin.com/in/lucianocotto" target="_blank" class="contact-link"><span class="contact-link-icon">in</span><span>LinkedIn</span></a>
+      </div>
+    </div>
+    <form class="contact-form reveal-right" id="contactForm">
+      <div class="form-group"><label for="name">Nombre</label><input type="text" id="name" name="name" placeholder="Tu nombre" required></div>
+      <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" placeholder="tu@email.com" required></div>
+      <div class="form-group"><label for="project">Tipo de proyecto</label><input type="text" id="project" name="project" placeholder="Brand / Motion / WebUI / AiDesign"></div>
+      <div class="form-group"><label for="message">Mensaje</label><textarea id="message" name="message" placeholder="Contame sobre tu proyecto..." required></textarea></div>
+      <div class="form-submit"><button type="submit" class="btn-primary">Enviar mensaje →</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">© 2024 Luciano Cotto</div>
+  <div class="footer-right">
+    <a href="https://linkedin.com/in/lucianocotto" target="_blank">LinkedIn</a>
+    <a href="https://behance.net/lucianocotto" target="_blank">Behance</a>
+    <a href="https://wa.me/5491100000000" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/5491100000000" target="_blank" class="whatsapp-float" aria-label="WhatsApp">💬</a>
+
+<!-- ==================== PROJECT POPUP MODAL ==================== -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-container" id="popupContainer">
+    <!-- Header -->
+    <div class="popup-header">
+      <div class="popup-header-left">
+        <span class="popup-category-badge" id="popupCatBadge"></span>
+        <span class="popup-title" id="popupTitle"></span>
+      </div>
+      <button class="popup-close" id="popupClose" aria-label="Cerrar">✕</button>
+    </div>
+
+    <!-- Media area -->
+    <div class="popup-media" id="popupMedia">
+      <!-- Carousel slides injected here -->
+      <button class="popup-carousel-btn popup-carousel-btn--prev hidden" id="popupPrev">‹</button>
+      <button class="popup-carousel-btn popup-carousel-btn--next hidden" id="popupNext">›</button>
+      <div class="popup-counter hidden" id="popupCounter"></div>
+      <div class="popup-dots hidden" id="popupDots"></div>
+    </div>
+
+    <!-- Caption -->
+    <div class="popup-caption">
+      <p class="popup-caption-text" id="popupCaption"></p>
+      <div class="popup-caption-meta" id="popupMeta"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== LOADER =====================
+(function(){
+  const loader=document.getElementById('loader'),bar=document.getElementById('loaderBar'),counter=document.getElementById('loaderCounter');
+  let count=0;
+  const iv=setInterval(()=>{count+=Math.floor(Math.random()*8)+2;if(count>100)count=100;bar.style.width=count+'%';counter.textContent=count;if(count>=100){clearInterval(iv);setTimeout(()=>{gsap.to(loader,{opacity:0,duration:0.6,ease:'power2.inOut',onComplete:()=>{loader.style.display='none';initAnimations();}});},300);}},40);
+})();
+
+// ===================== NAVIGATION =====================
+(function(){
+  const nav=document.getElementById('mainNav'),toggle=document.getElementById('navToggle'),mm=document.getElementById('mobileMenu');
+  let lastScroll=0,menuOpen=false;
+  window.addEventListener('scroll',()=>{const s=window.pageYOffset;if(s>lastScroll&&s>100)nav.classList.add('nav--hidden');else nav.classList.remove('nav--hidden');lastScroll=s;updateActiveNav();});
+  toggle.addEventListener('click',()=>{menuOpen=!menuOpen;toggle.classList.toggle('nav-toggle--open',menuOpen);mm.classList.toggle('mobile-menu--open',menuOpen);document.body.style.overflow=menuOpen?'hidden':'';});
+  document.querySelectorAll('[data-mobile-link]').forEach(l=>{l.addEventListener('click',()=>{menuOpen=false;toggle.classList.remove('nav-toggle--open');mm.classList.remove('mobile-menu--open');document.body.style.overflow='';});});
+  function updateActiveNav(){
+    const sections=document.querySelectorAll('.hero[id],section[id]');
+    const links=document.querySelectorAll('.nav-links a');
+    let current='';
+    sections.forEach(s=>{if(window.pageYOffset>=s.offsetTop-150)current=s.id;});
+    links.forEach(l=>{l.classList.remove('active');if(l.dataset.section===current)l.classList.add('active');});
+  }
+  document.querySelectorAll('.nav-links a,.mobile-menu a,.specialty-card,a[href^="#"]:not(.nav-contact-btn)').forEach(link=>{
+    if(link.closest('.nav-links')||link.closest('.mobile-menu')||link.classList.contains('specialty-card')){
+      link.addEventListener('click',e=>{
+        e.preventDefault();
+        const t=document.querySelector(link.getAttribute('href')||'');
+        if(t)gsap.to(window,{scrollTo:{y:t,offsetY:60},duration:1,ease:'power3.inOut'});
+      });
+    }
+  });
+  document.querySelectorAll('.nav-contact-btn').forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector('#contact');if(t)gsap.to(window,{scrollTo:{y:t,offsetY:60},duration:1,ease:'power3.inOut'});});});
+})();
+
+// ===================== GSAP ANIMATIONS =====================
+function initAnimations(){
+  gsap.registerPlugin(ScrollTrigger,ScrollToPlugin);
+
+  // Hero
+  gsap.from('.hero-eyebrow',{y:30,opacity:0,duration:0.8,ease:'power3.out',delay:0.2});
+  gsap.from('.hero-headline .reveal-up',{y:80,opacity:0,duration:1,stagger:0.12,ease:'power3.out',delay:0.4});
+  gsap.from('.hero-sub',{y:30,opacity:0,duration:0.8,ease:'power3.out',delay:1});
+  gsap.from('.hero-ctas',{y:30,opacity:0,duration:0.8,ease:'power3.out',delay:1.2});
+  gsap.from('.hero-stat',{y:30,opacity:0,duration:0.8,stagger:0.15,ease:'power3.out',delay:1.5});
+
+  // Counters
+  document.querySelectorAll('.counter').forEach(el=>{
+    const t=parseInt(el.dataset.target);
+    gsap.to(el,{duration:2,ease:'power1.out',delay:1.8,
+      onUpdate:function(){const v=Math.round(this.progress()*t);el.textContent=v;}
+    });
+  });
+
+  // Scroll reveals
+  gsap.utils.toArray('.reveal-up,.reveal-scale,.reveal-right').forEach(el=>{
+    if(el.closest('.hero'))return;
+    const isRight=el.classList.contains('reveal-right');
+    const isScale=el.classList.contains('reveal-scale');
+    const props={};
+    if(isRight)props.x=40;else if(isScale){props.scale=0.92;}else{props.y=40;}
+    gsap.fromTo(el,props,{
+      x:0,y:0,scale:1,opacity:1,duration:0.8,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 85%',toggleActions:'play none none none'}
+    });
+  });
+
+  // Parallax hero bg
+  gsap.to('.hero-bg-grid',{y:-100,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+
+  // Marquee speed
+  const mt=document.querySelector('.marquee-track');
+  ScrollTrigger.create({trigger:'.marquee-section',start:'top bottom',end:'bottom top',onUpdate:self=>{mt.style.animationDuration=Math.max(10,30-self.velocity/50)+'s';}});
+}
+
+// ===================== FILTER SYSTEM =====================
+(function(){
+  document.querySelectorAll('.projects-filter').forEach(fb=>{
+    const btns=fb.querySelectorAll('.filter-btn');
+    const section=fb.closest('.section');
+    if(!section)return;
+    // Find the grid after the filter bar
+    const allGrids=section.querySelectorAll('.brand-grid,.motion-grid,.ai-gallery');
+    let grid=allGrids[0];
+
+    btns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        btns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter=btn.dataset.filter;
+        // Find items
+        let items;
+        if(grid.classList.contains('brand-grid'))items=grid.querySelectorAll('.brand-item');
+        else if(grid.classList.contains('motion-grid'))items=grid.querySelectorAll('.motion-item');
+        else items=grid.querySelectorAll('.ai-gallery-item');
+
+        items.forEach(item=>{
+          const cat=item.dataset.category;
+          if(filter==='all'||cat===filter){
+            item.className=item.className.replace(/filter-\w+/g,'').trim();
+            item.classList.add('filter-visible');
+          }else{
+            item.className=item.className.replace(/filter-\w+/g,'').trim();
+            item.classList.add('filter-dimmed');
+          }
+        });
+      });
+    });
+  });
+})();
+
+// ===================== POPUP MODAL SYSTEM =====================
+(function(){
+  const overlay=document.getElementById('popupOverlay');
+  const container=document.getElementById('popupContainer');
+  const closeBtn=document.getElementById('popupClose');
+  const mediaArea=document.getElementById('popupMedia');
+  const prevBtn=document.getElementById('popupPrev');
+  const nextBtn=document.getElementById('popupNext');
+  const counterEl=document.getElementById('popupCounter');
+  const dotsEl=document.getElementById('popupDots');
+  const catBadge=document.getElementById('popupCatBadge');
+  const titleEl=document.getElementById('popupTitle');
+  const captionEl=document.getElementById('popupCaption');
+  const metaEl=document.getElementById('popupMeta');
+
+  let currentSlide=0;
+  let slides=[];
+  let isVideoOnly=false;
+
+  function createSlideHTML(slide,idx){
+    const div=document.createElement('div');
+    div.className='popup-slide'+(idx===0?' popup-slide--active':'');
+    div.dataset.index=idx;
+
+    if(slide.type==='iframe'){
+      div.innerHTML=`<iframe src="${slide.src}" allow="autoplay;encrypted-media" allowfullscreen></iframe>`;
+    }else if(slide.type==='video'){
+      div.innerHTML=`<video src="${slide.src}" controls autoplay muted loop playsinline style="width:100%;height:100%;object-fit:contain;"></video>`;
+    }else if(slide.type==='svg'||slide.type==='image'){
+      div.innerHTML=`<img src="${slide.src}" alt="" style="width:100%;height:100%;object-fit:contain;">`;
+    }
+    return div;
+  }
+
+  function createVideoHTML(videoUrl){
+    const wrap=document.createElement('div');
+    wrap.className='popup-video-wrap';
+    // Check if it's a YouTube/Vimeo embed URL
+    if(videoUrl.includes('youtube')||videoUrl.includes('vimeo')){
+      wrap.innerHTML=`<iframe src="${videoUrl}" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+    }else{
+      wrap.innerHTML=`<video src="${videoUrl}" controls autoplay muted loop playsinline style="width:100%;height:100%;object-fit:contain;"></video>`;
+    }
+    return wrap;
+  }
+
+  function openPopup(el){
+    const type=el.dataset.popupType||'carousel';
+    const title=el.dataset.popupTitle||'';
+    const cat=el.dataset.popupCat||'';
+    const caption=el.dataset.popupCaption||'';
+    const meta=el.dataset.popupMeta||'';
+
+    catBadge.textContent=cat;
+    titleEl.textContent=title;
+    captionEl.textContent=caption;
+    metaEl.innerHTML='';
+    if(meta){
+      meta.split(',').forEach(m=>{
+        const span=document.createElement('span');
+        span.textContent=m.trim();
+        metaEl.appendChild(span);
+      });
+    }
+
+    // Clear previous media (keep buttons)
+    const children=Array.from(mediaArea.children);
+    children.forEach(c=>{
+      if(!c.classList.contains('popup-carousel-btn')&&!c.classList.contains('popup-counter')&&!c.classList.contains('popup-dots')){
+        c.remove();
+      }
+    });
+
+    prevBtn.classList.add('hidden');
+    nextBtn.classList.add('hidden');
+    counterEl.classList.add('hidden');
+    dotsEl.classList.add('hidden');
+    dotsEl.innerHTML='';
+    currentSlide=0;
+    slides=[];
+
+    if(type==='video'){
+      isVideoOnly=true;
+      const videoUrl=el.dataset.popupVideo||'';
+      if(videoUrl){
+        mediaArea.insertBefore(createVideoHTML(videoUrl),prevBtn);
+      }else{
+        const fallback=document.createElement('div');
+        fallback.className='popup-video-wrap';
+        fallback.innerHTML=`<div style="text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:14px;"><div style="font-size:48px;margin-bottom:16px;">▶</div><div>Video no disponible</div></div>`;
+        mediaArea.insertBefore(fallback,prevBtn);
+      }
+    }else{
+      isVideoOnly=false;
+      let slidesData=[];
+      try{
+        slidesData=JSON.parse(el.dataset.popupSlides||'[]');
+      }catch(e){slidesData=[];}
+
+      if(slidesData.length===0){
+        const fb=document.createElement('div');
+        fb.className='popup-video-wrap';
+        fb.innerHTML=`<div style="text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:14px;"><div style="font-size:48px;margin-bottom:16px;">🖼</div><div>Sin contenido disponible</div></div>`;
+        mediaArea.insertBefore(fb,prevBtn);
+      }else if(slidesData.length===1){
+        // Single slide — no carousel controls needed
+        slides=slidesData;
+        mediaArea.insertBefore(createSlideHTML(slidesData[0],0),prevBtn);
+      }else{
+        slides=slidesData;
+        slidesData.forEach((s,i)=>{
+          mediaArea.insertBefore(createSlideHTML(s,i),prevBtn);
+        });
+
+        // Show controls
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+        counterEl.classList.remove('hidden');
+        dotsEl.classList.remove('hidden');
+        counterEl.textContent=`${slidesData.length} / ${slidesData.length}`;
+        updateCounter();
+
+        // Create dots
+        slidesData.forEach((_,i)=>{
+          const dot=document.createElement('button');
+          dot.className='popup-dot'+(i===0?' popup-dot--active':'');
+          dot.addEventListener('click',()=>goToSlide(i));
+          dotsEl.appendChild(dot);
+        });
+      }
+    }
+
+    overlay.classList.add('popup-overlay--open');
+    document.body.style.overflow='hidden';
+  }
+
+  function closePopup(){
+    overlay.classList.remove('popup-overlay--open');
+    document.body.style.overflow='';
+    // Clean up videos
+    mediaArea.querySelectorAll('video,iframe').forEach(m=>{
+      try{m.pause();}catch(e){}
+    });
+  }
+
+  function goToSlide(idx){
+    if(idx<0||idx>=slides.length)return;
+    const current=document.querySelector('.popup-slide--active');
+    if(current)current.classList.remove('popup-slide--active');
+    const nextSlide=document.querySelector(`.popup-slide[data-index="${idx}"]`);
+    if(nextSlide)nextSlide.classList.add('popup-slide--active');
+    currentSlide=idx;
+    updateCounter();
+    updateDots();
+  }
+
+  function updateCounter(){
+    counterEl.textContent=`${currentSlide+1} / ${slides.length}`;
+  }
+
+  function updateDots(){
+    const dots=dotsEl.querySelectorAll('.popup-dot');
+    dots.forEach((d,i)=>{
+      d.classList.toggle('popup-dot--active',i===currentSlide);
+    });
+  }
+
+  prevBtn.addEventListener('click',()=>goToSlide(currentSlide-1));
+  nextBtn.addEventListener('click',()=>goToSlide(currentSlide+1));
+  closeBtn.addEventListener('click',closePopup);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closePopup();});
+  document.addEventListener('keydown',e=>{
+    if(!overlay.classList.contains('popup-overlay--open'))return;
+    if(e.key==='Escape')closePopup();
+    if(e.key==='ArrowLeft'&&slides.length>1)goToSlide(currentSlide-1);
+    if(e.key==='ArrowRight'&&slides.length>1)goToSlide(currentSlide+1);
+  });
+
+  // Touch swipe support
+  let touchStartX=0;
+  mediaArea.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+  mediaArea.addEventListener('touchend',e=>{
+    const diff=touchStartX-e.changedTouches[0].clientX;
+    if(Math.abs(diff)>50&&slides.length>1){
+      if(diff>0)goToSlide(currentSlide+1);
+      else goToSlide(currentSlide-1);
+    }
+  },{passive:true});
+
+  // Bind all clickable items with data-popup-*
+  document.querySelectorAll('[data-popup-type]').forEach(el=>{
+    el.addEventListener('click',e=>{
+      e.preventDefault();
+      openPopup(el);
+    });
+  });
+})();
+
+// ===================== CONTACT FORM =====================
+(function(){
+  const form=document.getElementById('contactForm');
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    const fd=new FormData(form);
+    const msg=encodeURIComponent(`Hola Luciano! 👋\n\n*Nombre:* ${fd.get('name')}\n*Email:* ${fd.get('email')}\n*Proyecto:* ${fd.get('project')}\n*Mensaje:* ${fd.get('message')}`);
+    window.open(`https://wa.me/5491100000000?text=${msg}`,'_blank');
+    const btn=form.querySelector('.btn-primary');
+    const orig=btn.textContent;
+    btn.textContent='✓ Enviado!';
+    btn.style.background='#00cc6a';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';form.reset();},2000);
+  });
+})();
+</script>
+</body>
+</html>
+
